@@ -33,29 +33,31 @@ RUN unlink /usr/bin/gcc && \
     ln -s /usr/bin/g++-5 /usr/bin/g++
 RUN ./configure
 RUN ./configure release
-RUN cmake --build build --target llassetgen-cmd
+RUN cmake --build build
+RUN cmake --build build --target test
+RUN cmake --build build --target check-all
 
 # second build stage with minimal dependencies for running the tool
-FROM ubuntu:18.04
+# FROM ubuntu:18.04
 
-# circumvent EULA prompt for ttf-mscorefonts-installer
-RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
-RUN apt-get update && apt-get install -y \
-    curl \
-    libgomp1 \
-    libfreetype6 \
-    libfontconfig1 \
-    fontconfig \
-    fonts-roboto \
-    fonts-open-sans \
-    ttf-mscorefonts-installer \
-    sudo \
-&& rm -rf /var/lib/apt/lists/*
+# # circumvent EULA prompt for ttf-mscorefonts-installer
+# RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
+# RUN apt-get update && apt-get install -y \
+#     curl \
+#     libgomp1 \
+#     libfreetype6 \
+#     libfontconfig1 \
+#     fontconfig \
+#     fonts-roboto \
+#     fonts-open-sans \
+#     ttf-mscorefonts-installer \
+#     sudo \
+# && rm -rf /var/lib/apt/lists/*
 
-# install all Google Fonts
-RUN curl https://raw.githubusercontent.com/qrpike/Web-Font-Load/master/install.sh | bash
+# # install all Google Fonts
+# RUN curl https://raw.githubusercontent.com/qrpike/Web-Font-Load/master/install.sh | bash
 
-COPY --from=builder /usr/src/llassetgen/build/llassetgen-cmd .
-COPY --from=builder /usr/src/llassetgen/build/libllassetgen.so.1 .
+# COPY --from=builder /usr/src/llassetgen/build/llassetgen-cmd .
+# COPY --from=builder /usr/src/llassetgen/build/libllassetgen.so.1 .
 
-CMD ["./llassetgen-cmd"]
+# CMD ["./llassetgen-cmd"]
